@@ -1,0 +1,131 @@
+{
+  "sheets": [
+    {
+      "name": "Users",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "email", "type": "text", "unique": true, "description": "Email de l'utilisateur" },
+        { "name": "password", "type": "text", "description": "Mot de passe hashé" },
+        { "name": "firstName", "type": "text", "description": "Prénom" },
+        { "name": "lastName", "type": "text", "description": "Nom" },
+        { "name": "role", "type": "text", "description": "Rôle (owner, tenant, admin)" },
+        { "name": "notificationPreferences", "type": "json", "description": "Préférences de notification" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Date de mise à jour" }
+      ]
+    },
+    {
+      "name": "Properties",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "ownerId", "type": "uuid", "foreign": "users.id", "description": "Propriétaire" },
+        { "name": "reference", "type": "text", "unique": true, "description": "Référence unique" },
+        { "name": "name", "type": "text", "description": "Nom du bien" },
+        { "name": "type", "type": "text", "description": "Type (apartment, house, commercial, other)" },
+        { "name": "address", "type": "text", "description": "Adresse" },
+        { "name": "city", "type": "text", "description": "Ville" },
+        { "name": "postalCode", "type": "text", "description": "Code postal" },
+        { "name": "surface", "type": "numeric", "description": "Surface en m²" },
+        { "name": "rentAmount", "type": "numeric", "description": "Loyer total" },
+        { "name": "status", "type": "text", "description": "Statut (available, rented, maintenance)" },
+        { "name": "description", "type": "text", "description": "Description" },
+        { "name": "photos", "type": "json", "description": "URLs des photos" },
+        { "name": "isFurnished", "type": "boolean", "description": "Meublé" },
+        { "name": "isSharedLiving", "type": "boolean", "description": "Colocation" },
+        { "name": "constructionYear", "type": "text", "description": "Année de construction" },
+        { "name": "numberOfRooms", "type": "integer", "description": "Nombre de pièces" },
+        { "name": "numberOfBedrooms", "type": "integer", "description": "Nombre de chambres" },
+        { "name": "numberOfBathrooms", "type": "integer", "description": "Nombre de salles de bain" },
+        { "name": "energyClass", "type": "text", "description": "Classe énergétique" },
+        { "name": "gesClass", "type": "text", "description": "Classe GES" },
+        { "name": "baseRent", "type": "numeric", "description": "Loyer hors charges" },
+        { "name": "charges", "type": "numeric", "description": "Charges" },
+        { "name": "deposit", "type": "numeric", "description": "Dépôt de garantie" },
+        { "name": "availableFrom", "type": "timestamp", "description": "Date de disponibilité" },
+        { "name": "tenantCriteria", "type": "json", "description": "Critères locataires" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Date de mise à jour" }
+      ]
+    },
+    {
+      "name": "Applications",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "propertyId", "type": "uuid", "foreign": "properties.id", "description": "Bien concerné" },
+        { "name": "applicantId", "type": "uuid", "foreign": "users.id", "description": "Candidat" },
+        { "name": "status", "type": "text", "description": "Statut (pending, accepted, rejected, cancelled)" },
+        { "name": "message", "type": "text", "description": "Message du candidat" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Date de mise à jour" }
+      ]
+    },
+    {
+      "name": "Tenancies",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "propertyId", "type": "uuid", "foreign": "properties.id", "description": "Bien loué" },
+        { "name": "tenantId", "type": "uuid", "foreign": "users.id", "description": "Locataire" },
+        { "name": "startDate", "type": "timestamp", "description": "Date de début" },
+        { "name": "endDate", "type": "timestamp", "description": "Date de fin" },
+        { "name": "status", "type": "text", "description": "Statut (active, pending, ended)" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Date de mise à jour" }
+      ]
+    },
+    {
+      "name": "Documents",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "type", "type": "text", "description": "Type de document" },
+        { "name": "name", "type": "text", "description": "Nom du fichier" },
+        { "name": "url", "type": "text", "description": "URL du document" },
+        { "name": "propertyId", "type": "uuid", "foreign": "properties.id", "description": "Bien concerné" },
+        { "name": "tenancyId", "type": "uuid", "foreign": "tenancies.id", "description": "Location concernée" },
+        { "name": "applicationId", "type": "uuid", "foreign": "applications.id", "description": "Candidature concernée" },
+        { "name": "uploadedAt", "type": "timestamp", "description": "Date d'upload" }
+      ]
+    },
+    {
+      "name": "Messages",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "content", "type": "text", "description": "Contenu du message" },
+        { "name": "senderId", "type": "uuid", "foreign": "users.id", "description": "Expéditeur" },
+        { "name": "receiverId", "type": "uuid", "foreign": "users.id", "description": "Destinataire" },
+        { "name": "read", "type": "boolean", "description": "Lu/Non lu" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date d'envoi" }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "userId", "type": "uuid", "foreign": "users.id", "description": "Destinataire" },
+        { "name": "type", "type": "text", "description": "Type (info, success, warning, error)" },
+        { "name": "title", "type": "text", "description": "Titre" },
+        { "name": "message", "type": "text", "description": "Message" },
+        { "name": "read", "type": "boolean", "description": "Lu/Non lu" },
+        { "name": "link", "type": "text", "description": "Lien optionnel" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" }
+      ]
+    },
+    {
+      "name": "Incidents",
+      "columns": [
+        { "name": "id", "type": "uuid", "primary": true, "description": "Identifiant unique" },
+        { "name": "propertyId", "type": "uuid", "foreign": "properties.id", "description": "Bien concerné" },
+        { "name": "tenantId", "type": "uuid", "foreign": "users.id", "description": "Locataire" },
+        { "name": "type", "type": "text", "description": "Type (plumbing, electrical, heating, etc.)" },
+        { "name": "status", "type": "text", "description": "Statut (reported, in_progress, scheduled, resolved, cancelled)" },
+        { "name": "title", "type": "text", "description": "Titre" },
+        { "name": "description", "type": "text", "description": "Description" },
+        { "name": "photos", "type": "json", "description": "URLs des photos" },
+        { "name": "scheduledDate", "type": "timestamp", "description": "Date d'intervention prévue" },
+        { "name": "estimatedCost", "type": "numeric", "description": "Coût estimé" },
+        { "name": "resolution", "type": "text", "description": "Résolution" },
+        { "name": "createdAt", "type": "timestamp", "description": "Date de création" },
+        { "name": "updatedAt", "type": "timestamp", "description": "Date de mise à jour" }
+      ]
+    }
+  ]
+}

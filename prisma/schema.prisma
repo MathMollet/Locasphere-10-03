@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  password              String
+  firstName             String
+  lastName              String
+  role                  String    // 'owner' | 'tenant'
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  notificationPreferences Json?
+  properties            Property[]
+  tenancies             Tenancy[]
+  applications          Application[]
+  messages              Message[]
+  notifications         Notification[]
+}
+
+model Property {
+  id                String    @id @default(uuid())
+  reference         String    @unique
+  name              String
+  type              String    // 'apartment' | 'house' | 'commercial' | 'other'
+  address           String
+  city              String
+  postalCode        String
+  surface           Float
+  rentAmount        Float
+  status            String    // 'available' | 'rented' | 'maintenance'
+  description       String?
+  photos            String[]
+  isFurnished       Boolean   @default(false)
+  isSharedLiving    Boolean   @default(false)
+  constructionYear  String?
+  numberOfRooms     Int
+  numberOfBedrooms  Int
+  numberOfBathrooms Int
+  energyClass       String
+  gesClass          String
+  baseRent          Float
+  charges           Float
+  deposit           Float
+  availableFrom     DateTime?
+  tenantCriteria    Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  ownerId           String
+  owner             User      @relation(fields: [ownerId], references: [id])
+  tenancies         Tenancy[]
+  applications      Application[]
+  incidents         Incident[]
+  documents         Document[]
+}
+
+model Tenancy {
+  id            String    @id @default(uuid())
+  startDate     DateTime
+  endDate       DateTime?
+  status        String    // 'active' | 'pending' | 'ended'
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+  tenantId      String
+  tenant        User      @relation(fields: [tenantId], references: [id])
+  documents     Document[]
+}
+
+model Application {
+  id            String    @id @default(uuid())
+  status        String    // 'pending' | 'accepted' | 'rejected'
+  message       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+  applicantId   String
+  applicant     User      @relation(fields: [applicantId], references: [id])
+  documents     Document[]
+}
+
+model Incident {
+  id            String    @id @default(uuid())
+  type          String    // 'plumbing' | 'electrical' | 'heating' | 'appliance' | 'structural' | 'other'
+  status        String    // 'reported' | 'in_progress' | 'scheduled' | 'resolved' | 'cancelled'
+  title         String
+  description   String
+  photos        String[]
+  scheduledDate DateTime?
+  estimatedCost Float?
+  resolution    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+}
+
+model Document {
+  id            String    @id @default(uuid())
+  type          String
+  name          String
+  url           String
+  uploadedAt    DateTime  @default(now())
+  propertyId    String?
+  property      Property? @relation(fields: [propertyId], references: [id])
+  tenancyId     String?
+  tenancy       Tenancy?  @relation(fields: [tenancyId], references: [id])
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+}
+
+model Message {
+  id          String    @id @default(uuid())
+  content     String
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  senderId    String
+  sender      User      @relation(fields: [senderId], references: [id])
+  receiverId  String
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  type        String    // 'info' | 'success' | 'warning' | 'error'
+  title       String
+  message     String
+  read        Boolean   @default(false)
+  link        String?
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
